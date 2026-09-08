@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Inspector Dashboard</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- Header -->
+
+    <header class="dashboard-header">
+
+        <div>
+            <h1>📋 Inspector Dashboard</h1>
+            <p>Smart Real-Time Monitoring & Inspection</p>
+        </div>
+
+        <button class="logout-btn" onclick="logout()">
+            Logout
+        </button>
+
+    </header>
+
+
+    <!-- Welcome -->
+
+    <section class="welcome">
+
+        <h2>Welcome, Inspector 👋</h2>
+
+        <p>
+            Manage your inspections and submit real-time reports.
+        </p>
+
+    </section>
+
+
+    <!-- Statistics -->
+
+    <section class="cards">
+
+        <div class="card">
+            <div class="card-icon">📋</div>
+            <h3 id="totalInspections">0</h3>
+            <p>Total Inspections</p>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">✅</div>
+            <h3 id="completedInspections">0</h3>
+            <p>Completed</p>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">⏳</div>
+            <h3 id="pendingInspections">0</h3>
+            <p>Pending</p>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">⚠️</div>
+            <h3 id="issueInspections">0</h3>
+            <p>Issues Found</p>
+        </div>
+
+    </section>
+
+
+    <!-- New Inspection -->
+
+    <section class="new-inspection">
+
+        <h2>Start New Inspection</h2>
+
+        <p>
+            Create a new inspection report for an institution.
+        </p>
+
+        <button
+            class="start-btn"
+            onclick="startInspection()">
+
+            + New Inspection
+
+        </button>
+
+    </section>
+
+
+    <!-- Recent Inspections -->
+
+    <section class="recent">
+
+        <h2>Recent Inspections</h2>
+
+        <div id="inspectionList">
+
+            <p class="empty">
+                No inspections available.
+            </p>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<script>
+
+function startInspection() {
+
+    window.location.href = "inspection.html";
+
+}
+
+
+function logout() {
+
+    localStorage.removeItem("userRole");
+
+    window.location.href = "index.html";
+
+}
+
+
+function loadInspections() {
+
+    let inspections =
+        JSON.parse(
+            localStorage.getItem("inspections")
+        ) || [];
+
+
+    document.getElementById("totalInspections")
+        .innerText = inspections.length;
+
+
+    let completed = inspections.filter(
+        item => item.status === "Completed"
+    ).length;
+
+
+    let pending = inspections.filter(
+        item => item.status === "Pending"
+    ).length;
+
+
+    let issues = inspections.filter(
+        item => item.issue === "Yes"
+    ).length;
+
+
+    document.getElementById("completedInspections")
+        .innerText = completed;
+
+
+    document.getElementById("pendingInspections")
+        .innerText = pending;
+
+
+    document.getElementById("issueInspections")
+        .innerText = issues;
+
+
+    let list =
+        document.getElementById("inspectionList");
+
+
+    if (inspections.length === 0) {
+
+        list.innerHTML =
+            '<p class="empty">No inspections available.</p>';
+
+        return;
+
+    }
+
+
+    list.innerHTML = "";
+
+
+    inspections.slice().reverse().forEach(
+        function(item) {
+
+            let div =
+                document.createElement("div");
+
+            div.className = "inspection-item";
+
+
+            div.innerHTML = `
+
+                <div>
+
+                    <h3>${item.institution}</h3>
+
+                    <p>
+                        📍 ${item.location}
+                    </p>
+
+                    <p>
+                        📅 ${item.date}
+                    </p>
+
+                </div>
+
+                <span class="status">
+                    ${item.status}
+                </span>
+
+            `;
+
+
+            list.appendChild(div);
+
+        }
+    );
+
+}
+
+
+loadInspections();
+
+</script>
+
+</body>
+</html>
